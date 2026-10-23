@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Registration-EventHub</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+	<nav class="navbar">
+		<div class="logo">EventHub</div>
+
+		<div class="nav-links">
+			<a href="index.html">Home</a> <a href="events.html">Events</a> <a
+				href="#">About</a> <a href="login.html">Login</a> <a
+				href="registration.html" class="register-btn">Register</a>
+		</div>
+	</nav>
+
+	<main class="registration-page">
+		<h1>Event Registration</h1>
+		<form action="register" method="post">
+			<!-- name -->
+			<label for="name">Full Name</label> <input type="text" id="name"
+				name="name" placeholder="Enter your full name" required>
+
+			<!-- email -->
+			<label for="email">Email</label> <input type="email" id="email"
+				name="email" placeholder="Enter your email" required>
+
+			<!-- phone -->
+			<label for="phone">Phone Number</label> <input type="tel" id="phone"
+				name="phone" placeholder="Enter your phone no" required>
+
+			<!-- department -->
+			<label for="department">Department</label> <select name="department"
+				id="department" required>
+				<option value="">Select your department</option>
+				<option value="computer">Computer Engineering</option>
+				<option value="it">Information Technology</option>
+				<option value="civil">Civil</option>
+				<option value="mechanical">Mechanical Engineering</option>
+			</select>
+
+			<!-- year -->
+			<label for="year">Year</label> <select name="year" id="year" required>
+				<option value="">Select your year</option>
+				<option value="1">First Year</option>
+				<option value="2">Second year</option>
+				<option value="3">Third Year</option>
+				<option value="4">Fourth Year</option>
+			</select>
+
+			<!-- event -->
+			<label for="event">Select Event</label> 
+			<select name="event" id="event" required>
+				<option value="">Loading events...</option>
+			</select>
+
+			<button type="submit">Register</button>
+		</form>
+	</main>
+
+
+	
+<script>
+    async function loadEventOptions() {
+        const dropdown = document.getElementById("event");
+        const params = new URLSearchParams(window.location.search);
+        const selectedEventId = params.get("eventId");
+
+        try {
+            let response;
+            try {
+                response = await fetch("events");
+                if (!response.ok) {
+                    throw new Error("API not available, fallback to static JSON");
+                }
+            } catch (err) {
+                response = await fetch("events.json");
+            }
+
+            if (!response.ok) {
+                throw new Error("Could not load events");
+            }
+
+            const events = await response.json();
+
+            dropdown.innerHTML = '<option value="">Select an event</option>';
+
+            events.forEach(event => {
+                const option = document.createElement("option");
+
+                option.value = event.id;
+                option.textContent = event.name;
+
+                dropdown.appendChild(option);
+            });
+
+            if (selectedEventId) {
+                dropdown.value = selectedEventId;
+            }
+
+        } catch (error) {
+            console.error(error);
+            dropdown.innerHTML =
+                '<option value="">Unable to load events</option>';
+        }
+    }
+
+    // Handle form submission seamlessly on AWS Amplify (static hosting)
+    // while preserving live backend support if available
+    const registrationForm = document.querySelector(".registration-page form");
+    if (registrationForm) {
+        registrationForm.addEventListener("submit", async function (e) {
+            e.preventDefault();
+
+            const formData = new FormData(registrationForm);
+            const formObj = Object.fromEntries(formData.entries());
+            const eventDropdown = document.getElementById("event");
+            formObj.eventName = eventDropdown.options[eventDropdown.selectedIndex]?.text || "Selected Event";
+            formObj.registeredAt = new Date().toLocaleString();
+
+            // Try sending to the live servlet backend first
+            try {
+                const response = await fetch("register", {
+                    method: "POST",
+                    body: new URLSearchParams(formData)
+                });
+
+                if (response.ok || response.redirected) {
+                    // Save locally as well for offline/demo verification
+                    saveToLocalStorage(formObj);
+                    window.location.href = response.url || "success.html";
+                    return;
+                }
+            } catch (err) {
+                // Backend servlet not reachable (running on AWS Amplify static hosting)
+            }
+
+            // Fallback for AWS Amplify static hosting: save in localStorage & navigate to success.html
+            saveToLocalStorage(formObj);
+            window.location.href = "success.html";
+        });
+    }
+
+    function saveToLocalStorage(record) {
+        try {
+            const list = JSON.parse(localStorage.getItem("eventhub_registrations") || "[]");
+            list.push(record);
+            localStorage.setItem("eventhub_registrations", JSON.stringify(list));
+            localStorage.setItem("eventhub_last_registration", JSON.stringify(record));
+        } catch (e) {
+            console.error("Storage error:", e);
+        }
+    }
+
+    loadEventOptions();
+</script>
+</body>
+</html>

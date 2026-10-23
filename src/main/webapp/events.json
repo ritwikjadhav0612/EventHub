@@ -1,0 +1,42 @@
+[
+  {
+    "id": 1,
+    "name": "Hackathon 2026",
+    "date": "2026-11-15",
+    "venue": "Main Auditorium",
+    "description": "Annual 24-hour coding competition where students build innovative software and hardware projects.",
+    "category": "Technical"
+  },
+  {
+    "id": 2,
+    "name": "RoboWars",
+    "date": "2026-11-16",
+    "venue": "Campus Arena",
+    "description": "Battle of autonomous and remote-controlled combat robots.",
+    "category": "Technical"
+  },
+  {
+    "id": 3,
+    "name": "Dance Fest",
+    "date": "2026-11-18",
+    "venue": "Open Air Theatre",
+    "description": "Inter-college dance competition showcasing classical, hip-hop, and folk styles.",
+    "category": "Cultural"
+  },
+  {
+    "id": 4,
+    "name": "Annual Cricket Tournament",
+    "date": "2026-11-20",
+    "venue": "College Sports Ground",
+    "description": "Inter-departmental knock-out cricket tournament.",
+    "category": "Sports"
+  },
+  {
+    "id": 5,
+    "name": "Debate Championship",
+    "date": "2026-11-22",
+    "venue": "Seminar Hall B",
+    "description": "Parliamentary debate competition on artificial intelligence, future ethics, and society.",
+    "category": "Literary"
+  }
+]

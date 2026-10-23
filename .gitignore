@@ -1,0 +1,13 @@
+# Keep database credentials private
+/src/main/resources/config.properties
+
+# Build output
+/target/
+/build/
+/bin/
+
+# IDE-specific files
+/.settings/
+/.classpath
+/.project
+.DS_Store
